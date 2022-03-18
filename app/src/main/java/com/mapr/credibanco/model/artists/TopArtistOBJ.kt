@@ -1,4 +1,4 @@
-package com.mapr.credibanco.model
+package com.mapr.credibanco.model.artists
 
 data class TopArtistOBJ (
     val artist: List<ArtistOBJ>

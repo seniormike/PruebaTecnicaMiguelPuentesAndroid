@@ -45,8 +45,6 @@ class ArtistsRepository(private val application: Application) {
                 call: Call<ResponseTopArtists>,
                 response: Response<ResponseTopArtists>
             ) {
-                //Utils().printLog(response)
-               // Utils().printLog("RawResponse: " + Gson().toJson(response))
                 val responseObj: ResponseTopArtists = response.body()!!
                 Utils().printLog(responseObj.toString())
                 Utils().printLog("Response: " + Gson().toJson(responseObj))
@@ -62,7 +60,7 @@ class ArtistsRepository(private val application: Application) {
                             dataArtist.url = it.url
                             dataArtist.streamable = it.streamable
                             if (it.image.isNotEmpty()) {
-                                dataArtist.imageUrl = it.image[0].size
+                                dataArtist.imageUrl = it.image[0].text
                             } else {
                                 dataArtist.imageUrl = ""
                             }
@@ -70,10 +68,12 @@ class ArtistsRepository(private val application: Application) {
                         }
                         AppMusicapp(application).dataArtistDao().deleteAll()
                         val insert = AppMusicapp(application).dataArtistDao().insertAll(list)
-                        Utils().printLog("Insertado en la BD Auth $insert")
+                        Utils().printLog("Insertando en la BD Artist $insert")
+                        listener.onResponseTopArtists(responseObj)
                     }
+                } else {
+                    listener.onFailedTopArtists()
                 }
-                listener.onResponseTopArtists(responseObj)
             }
 
             override fun onFailure(call: Call<ResponseTopArtists>, t: Throwable) {
@@ -85,7 +85,7 @@ class ArtistsRepository(private val application: Application) {
     }
 
     /**
-     *
+     * Listener para responder el servicio de top artist
      */
     interface OnListenerResponseTopArtists {
         fun onResponseTopArtists(responseTopArtists: ResponseTopArtists)

@@ -23,7 +23,11 @@ interface ApiServices {
     @POST(".")
     @Headers("Accept:Application/json")
     fun requestTopArtistTracks(
-        @Header("Authorization") auth: String,
+        @Query("api_key") auth: String,
+        @Query("method") method: String,
+        @Query("mbid") mbid: String,
+        @Query("format") format: String,
+        @Query("limit") limit: Int,
         @Body data: RequestArtistTracks
     ): Call<ResponseArtistTracks>
 }

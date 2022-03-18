@@ -14,8 +14,9 @@ import com.mapr.credibanco.model.db.DataArtist
 import com.mapr.credibanco.services.requests.RequestTopArtists
 import com.mapr.credibanco.tools.Constants
 import com.mapr.credibanco.tools.DialogFactory
+import com.mapr.credibanco.tools.Utils
 import com.mapr.credibanco.view.adapters.AdapterArtists
-import com.mapr.credibanco.view.dialogs.DetailAuthCustomDialog
+import com.mapr.credibanco.view.dialogs.ArtistSongsCustomDialog
 import com.mapr.credibanco.viewmodel.ArtistsViewModel
 
 class ArtistsFragment : Fragment() {
@@ -41,11 +42,12 @@ class ArtistsFragment : Fragment() {
         val root: View = binding.root
         context?.let {
             progress = DialogFactory().setProgress(it)
+            progress.show()
         }
         artistsViewModel =
             ViewModelProvider(this@ArtistsFragment)[ArtistsViewModel::class.java]
 
-        // Recycler de authorization
+        // Recycler de artistas
         recyclerArtists = binding.recyclerArtists
         recyclerArtists.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -60,6 +62,7 @@ class ArtistsFragment : Fragment() {
         initializeArtistsAdapter()
         artistsViewModel.dialogMsg.observe(viewLifecycleOwner) {
             if (it.isNotBlank()) {
+                progress.dismiss()
                 val dialog = DialogFactory().getDialog(it, requireContext())
                 dialog.show()
             }
@@ -85,15 +88,16 @@ class ArtistsFragment : Fragment() {
             ArrayList<DataArtist>(),
             object : AdapterArtists.OnClickDetail {
                 override fun onClickDetail(item: DataArtist) {
-                    val dialogDetail = DetailAuthCustomDialog(item)
+                    val dialogDetail = ArtistSongsCustomDialog(item)
                     dialogDetail.show(
                         childFragmentManager,
                         Constants.CUSTOM_DIALOG_DETAIL
                     )
+
                 }
 
                 override fun onClickDelete(item: DataArtist) {
-                    //requestCancellation(item)
+                    artistsViewModel.deleteArtistDB(item)
                 }
             })
         recyclerArtists.adapter = adapterArtists

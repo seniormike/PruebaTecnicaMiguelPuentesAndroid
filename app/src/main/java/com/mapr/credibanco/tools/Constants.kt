@@ -14,8 +14,9 @@ object Constants {
    const val METHOD_GET_TRACKS = "artist.getTopTracks"
    const val FORMAT_JSON = "json"
    const val LIMIT_NUM_ARTISTS = 10
+   const val LIMIT_NUM_TRACKS = 5
 
-   // Authorization response status
+   // Service response status
    const val SUCCESS_STATUS = 200
 
    // Custom Dialog Tag

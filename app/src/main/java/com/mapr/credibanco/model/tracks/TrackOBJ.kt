@@ -1,7 +1,10 @@
-package com.mapr.credibanco.model
+package com.mapr.credibanco.model.tracks
 
-class ArtistOBJ(
+import com.mapr.credibanco.model.ImageOBJ
+
+data class TrackOBJ(
     val name: String,
+    val playcount: String,
     val listeners: String,
     val mbid: String,
     val url: String,

@@ -25,7 +25,7 @@
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="16dp"
             android:fontFamily="@font/roboto_regular"
-            android:hint="Receipt id"
+            android:hint="Coldplay"
             android:inputType="text"
             android:maxLines="1"
             android:textColor="@color/black"
@@ -52,7 +52,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/roboto_bold"
-        android:text="Autorizaciones aprobadas"
+        android:text="Búsquedas"
         android:textAlignment="textStart"
         android:textColor="@color/purple_700"
         android:textSize="24sp" />

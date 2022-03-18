@@ -2,14 +2,12 @@ package com.mapr.credibanco.repositories
 
 import android.app.Application
 import com.google.gson.Gson
-import com.mapr.credibanco.application.AppMusicapp
 import com.mapr.credibanco.services.ApiServices
 import com.mapr.credibanco.services.requests.RequestArtistTracks
 import com.mapr.credibanco.services.responses.ResponseArtistTracks
 import com.mapr.credibanco.tools.Constants
 import com.mapr.credibanco.tools.Constants.BASE_URL
 import com.mapr.credibanco.tools.Utils
-import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,39 +21,43 @@ class TracksRepository(private val application: Application) {
         .addConverterFactory(GsonConverterFactory.create())
         .build().create(ApiServices::class.java)
 
-    fun makeCancellationRequest(
+    fun requestTopArtistTracks(
         auth: String,
+        mbid: String,
         requestArtistTracks: RequestArtistTracks,
-        listener: OnListenerResponseCancellation
+        listener: OnListenerResponseTopTracks
     ) {
-        val authorization = "Basic ${Utils().convertToBase64(auth)}"
-        Utils().printLog("AUTH: " + Gson().toJson(authorization))
-        Utils().printLog("makeAuth Request: " + Gson().toJson(requestArtistTracks))
+        Utils().printLog("Request: " + Gson().toJson(requestArtistTracks))
 
         val call: Call<ResponseArtistTracks> =
-            apiServices.requestTopArtistTracks(authorization, requestArtistTracks)
+            apiServices.requestTopArtistTracks(
+                auth,
+                Constants.METHOD_GET_TRACKS,
+                mbid,
+                Constants.FORMAT_JSON,
+                Constants.LIMIT_NUM_TRACKS,
+                requestArtistTracks
+            )
         call.enqueue(object : Callback<ResponseArtistTracks> {
             override fun onResponse(
                 call: Call<ResponseArtistTracks>,
                 response: Response<ResponseArtistTracks>
             ) {
                 val responseObj: ResponseArtistTracks = response.body()!!
-                Utils().printLog("makeAuth Response: " + Gson().toJson(responseObj))
+                Utils().printLog("Response: " + Gson().toJson(responseObj))
 
-               /* if (responseObj.statusCode == Constants.SUCCESS_STATUS) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val dataTodb =AppMusicapp(application).dataAuthDao().findByReceiptId(requestArtistTracks.receiptId)
-                        AppMusicapp(application).dataAuthDao().delete(dataTodb)
-                        Utils().printLog("Eliminado en la BD Auth $dataTodb")
-                    }
-                }*/
-                listener.onResponseCancellation(responseObj)
+                if (response.code() == Constants.SUCCESS_STATUS) {
+                    listener.onResponseTopArtistTracks(responseObj)
+
+                } else {
+                    listener.onFailedTopTracks()
+                }
             }
 
             override fun onFailure(call: Call<ResponseArtistTracks>, t: Throwable) {
                 Utils().printLog(call.toString())
                 Utils().printLog(t.message.toString())
-                listener.onFailedCancellation()
+                listener.onFailedTopTracks()
             }
         })
     }
@@ -63,9 +65,9 @@ class TracksRepository(private val application: Application) {
     /**
      *
      */
-    interface OnListenerResponseCancellation {
-        fun onResponseCancellation(responseArtistTracks: ResponseArtistTracks)
-        fun onFailedCancellation()
+    interface OnListenerResponseTopTracks {
+        fun onResponseTopArtistTracks(responseArtistTracks: ResponseArtistTracks)
+        fun onFailedTopTracks()
     }
 
     companion object {
